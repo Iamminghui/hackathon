@@ -5,32 +5,8 @@ import time
 import threading
 import math
 
-if __name__ == '__main__':
-
-    detected = False
-    person = "Lars"
-    
-    timer = threading.Timer(1.0, alarm_info)
-
-    last_frame = ""
-    
-    if personEntered():
-
-        # Now someone is entering the apartment
-        if not detected:
-            detected = detectWantedPerson(person)
-            
-        if detected:
-            # We detected the correct person, keep tracking if he is moving
-            while True:
-                if not isPersonMovingwithin(5):
-                    # No moving for a person, alarm!!
-                    alarm(on)
-                else:
-                    # target is moving
-                    alarm(off)
-#                if detectPersonleft():
-#                    break
+def alarm_info():
+    print "Alert! target is not moving"
 
 def alarm(switch):
     if switch == "on":
@@ -38,9 +14,6 @@ def alarm(switch):
     else: # switch == "off"
         timer.cancel()
         
-def alarm_info():
-    print "Alert! target is not moving"
-
 def detectWantedPerson(name):
 
     # logic should be:
@@ -88,6 +61,7 @@ def isPersonMovingWithin(time_in_seconds):
             # person detected
             draw_detections(frame,found)
             if isMoving(found):
+                last_frame = found
                 cv2.imshow('feed',frame)
             else:
                 moving = False
@@ -111,8 +85,11 @@ def inside(r, q):
 
 def isMoving(current_img):
     tolerance = 5 # 5 pixels tolerance
+    print "here 1"
     for xc, yc, wc, hc in current_img:
+        print "here 2"
         for xl, yl, wl, hl in last_frame:
+            print "here 3"
             if math.fabs(xc - xl) > tolerance or math.fabs(yc - yl) > tolerance:
                 return True
             else:
@@ -125,4 +102,35 @@ def draw_detections(img, rects, thickness = 1):
         # so we slightly shrink the rectangles to get a nicer output.
         pad_w, pad_h = int(0.15*w), int(0.05*h)
         cv2.rectangle(img, (x+pad_w, y+pad_h), (x+w-pad_w, y+h-pad_h), (0, 255, 0), thickness)
+
+
+
+
+
+if __name__ == '__main__':
+
+    detected = False
+    person = "Lars"
+    
+    timer = threading.Timer(1.0, alarm_info)
+
+    last_frame = ""
+    
+    if personEntered():
+
+        # Now someone is entering the apartment
+        if not detected:
+            detected = detectWantedPerson(person)
+            
+        if detected:
+            # We detected the correct person, keep tracking if he is moving
+            while True:
+                if not isPersonMovingWithin(5):
+                    # No moving for a person, alarm!!
+                    alarm("on")
+                else:
+                    # target is moving
+                    alarm("off")
+#                if detectPersonleft():
+#                    break
 
