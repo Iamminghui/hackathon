@@ -2,16 +2,10 @@ import cv2
 import numpy as np
 
 #pattern = cv2.imread('32_32.jpg',0)
-pattern = cv2.imread('100_75.jpg',0)
+pattern = cv2.imread('../data/100_75.jpg',0)
 orb = cv2.ORB_create()
 
 capture = cv2.VideoCapture(0)
-
-out = cv2.VideoWriter(
-              'output1.avi',
-              cv2.VideoWriter_fourcc(*'H264'),
-              20.0,
-              (640,480))
 
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 success, frame = capture.read()
