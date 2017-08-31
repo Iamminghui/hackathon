@@ -61,10 +61,11 @@ def isPersonMovingWithin(time_in_seconds):
             # person detected
             draw_detections(frame,found)
             if isMoving(found):
-                last_frame = found
                 cv2.imshow('feed',frame)
             else:
                 moving = False
+
+            g_last_frame = found
             
         # check timeout
         if time.time() - start_time >= time_in_seconds:
@@ -85,10 +86,8 @@ def inside(r, q):
 
 def isMoving(current_img):
     tolerance = 5 # 5 pixels tolerance
-    print "here 1"
     for xc, yc, wc, hc in current_img:
-        print "here 2"
-        for xl, yl, wl, hl in last_frame:
+        for xl, yl, wl, hl in g_last_frame:
             print "here 3"
             if math.fabs(xc - xl) > tolerance or math.fabs(yc - yl) > tolerance:
                 return True
@@ -114,7 +113,8 @@ if __name__ == '__main__':
     
     timer = threading.Timer(1.0, alarm_info)
 
-    last_frame = ""
+    g_last_frame = ""
+    g_timer_status = False
     
     if personEntered():
 
@@ -126,11 +126,15 @@ if __name__ == '__main__':
             # We detected the correct person, keep tracking if he is moving
             while True:
                 if not isPersonMovingWithin(5):
-                    # No moving for a person, alarm!!
-                    alarm("on")
-                else:
+                    if not g_timer_status:
+                        # No moving for a person, alarm!!
+                        alarm("on")
+                        g_timer_status = True
+                else: # isPersonMovingWithin(5)
                     # target is moving
-                    alarm("off")
+                    if g_timer_status:
+                        alarm("off")
+                        g_timer_status = False
 #                if detectPersonleft():
 #                    break
 
