@@ -124,7 +124,7 @@ def isPersonMovingWithin(time_in_seconds):
             moving = True
             break
         
-    cv2.destroyAllWindows()
+    cv2.destroyWindow('feed')
 
 def inside(r, q):
     rx, ry, rw, rh = r
@@ -159,6 +159,11 @@ if __name__ == '__main__':
     cv2.imshow('Health monitor', background)
     cv2.waitKey(0)
 
+    # Create a blank 640x480 black image
+    image = np.zeros((480, 640, 3), np.uint8)
+    # Fill image with 
+    image[:] = (50, 50, 50)
+    background = image
     timer = threading.Timer(1.0, alarm_info)
 
     g_last_frame = ""
