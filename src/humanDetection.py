@@ -157,10 +157,9 @@ if __name__ == '__main__':
     g_last_frame = ""
     g_timer_status = False
     
-    if personEntered():
-
-        # Now someone is entering the apartment
+    while True:
         if not detected:
+            # Now someone is entering the apartment
             detected = detectWantedPerson(person)
             
         if detected:
@@ -176,6 +175,5 @@ if __name__ == '__main__':
                     if g_timer_status:
                         alarm("off")
                         g_timer_status = False
-#                if detectPersonleft():
-#                    break
-
+        
+                    
