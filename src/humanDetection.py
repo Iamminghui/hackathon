@@ -55,6 +55,9 @@ def detectWantedPerson(name):
         
         cv2.imshow('Gray', gray)
 
+        rows, cols, channels = res.shape
+        background[0:rows, 0:cols] = res
+        cv2.imshow('Health monitor', background)
         k = cv2.waitKey(60) & 0xff
         if k == 27:
             ret = False
@@ -65,7 +68,7 @@ def detectWantedPerson(name):
             ret = False
             break
         
-    cv2.destroyAllWindows()
+    cv2.destroyWindow('Gray')
     capture.release()
 
     print "ret: " + str(ret)
@@ -152,6 +155,10 @@ if __name__ == '__main__':
     detected = False
     person = "Lars"
     
+    background = cv2.imread('../data/background.jpg')
+    cv2.imshow('Health monitor', background)
+    cv2.waitKey(0)
+
     timer = threading.Timer(1.0, alarm_info)
 
     g_last_frame = ""
