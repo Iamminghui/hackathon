@@ -53,7 +53,9 @@ def detectWantedPerson(name):
                 ret = True
             break
         
-        cv2.imshow('Gray', gray)
+        #cv2.imshow('Gray', gray)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        cv2.putText(background,'Pulse 44 bpm',(330,40), font, 1,(233,244,255),1,cv2.LINE_AA)
 
         rows, cols, channels = res.shape
         background[0:rows, 0:cols] = res
@@ -68,7 +70,7 @@ def detectWantedPerson(name):
             ret = False
             break
         
-    cv2.destroyWindow('Gray')
+    #cv2.destroyWindow('Gray')
     capture.release()
 
     print "ret: " + str(ret)
