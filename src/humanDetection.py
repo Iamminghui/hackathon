@@ -28,16 +28,55 @@ def detectWantedPerson(name):
     # else:
     #     return False
     #     # time out
+
+    capture = cv2.VideoCapture(0)
+
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    success, frame = capture.read()
+    counter = 50
+    ret = False
     
-    return True
+    while success:
+        print "counter: " + str(counter)
+        
+        success, frame = capture.read()
+        res = cv2.resize(frame, (320, 200), 0, 0, cv2.INTER_CUBIC)
+        gray = cv2.cvtColor(res, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, 1.1, 3)
+        
+        if len(faces):
+            # face detected
+            print "face detected!"
+            print "faces: %s" %(faces,)
+            for (x, y, w, h) in faces:
+                cv2.rectangle(gray, (x, y), (x+w, y+h),(255,255,255),2)
+                ret = True
+            break
+        
+        cv2.imshow('Gray', gray)
+
+        k = cv2.waitKey(60) & 0xff
+        if k == 27:
+            ret = False
+            break
+        
+        counter -= 1
+        if (counter == 0):
+            ret = False
+            break
+        
+    cv2.destroyAllWindows()
+    capture.release()
+
+    print "ret: " + str(ret)
+    
+    return ret
 
 def personEntered():
 
     return True
 
 def isPersonMovingWithin(time_in_seconds):
-
-    start_time = time.time()
 
     # load the HOG Descriptor
     hog = cv2.HOGDescriptor()
@@ -48,14 +87,18 @@ def isPersonMovingWithin(time_in_seconds):
     # open the video capture
     cap = cv2.VideoCapture(0)
     
+    start_time = time.time()
+
     while True:
+        # This loop will last only for time_in_seconds seconds
+        
         _,frame=cap.read()
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # frame = cv2.resize(frame, (640, 360), 0, 0, cv2.INTER_CUBIC)
         frame = cv2.resize(frame, (400, 225), 0, 0, cv2.INTER_CUBIC)
         
         # scale: which controls by how much the image is resized at each layer
-        found,w=hog.detectMultiScale(frame, winStride=(4,4), padding=(32,32), scale=1.05)
+        found,w = hog.detectMultiScale(frame, winStride=(4,4), padding=(32,32), scale=1.05)
         
         if not w is None:
             # person detected
@@ -69,6 +112,7 @@ def isPersonMovingWithin(time_in_seconds):
             
         # check timeout
         if time.time() - start_time >= time_in_seconds:
+            print "time out. target moved within %s seconds" % (time_in_seconds)  
             moving = True
             break
 
@@ -94,15 +138,12 @@ def isMoving(current_img):
             else:
                 return False
             
-
 def draw_detections(img, rects, thickness = 1):
     for x, y, w, h in rects:
         # the HOG detector returns slightly larger rectangles than the real objects.
         # so we slightly shrink the rectangles to get a nicer output.
         pad_w, pad_h = int(0.15*w), int(0.05*h)
         cv2.rectangle(img, (x+pad_w, y+pad_h), (x+w-pad_w, y+h-pad_h), (0, 255, 0), thickness)
-
-
 
 
 
