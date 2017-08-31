@@ -36,6 +36,19 @@ if __name__ == '__main__':
 
 
 def detectWantedPerson(name):
+
+    # logic should be:
+    # time_in_seconds = 5
+    
+    # if faceDetected within time_in_seconds:
+    #     if personMatch(name):
+    #         return True
+    #     else:
+    #         #other person
+    #         return False
+    # else:
+    #     # time out
+    #     return False
     
     pattern = cv2.imread('100_75.jpg',0)
     orb = cv2.ORB_create()
