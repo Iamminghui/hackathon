@@ -54,8 +54,8 @@ def detectWantedPerson(name):
             break
         
         #cv2.imshow('Gray', gray)
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        cv2.putText(background,'Pulse 44 bpm',(330,40), font, 1,(233,244,255),1,cv2.LINE_AA)
+        #font = cv2.FONT_HERSHEY_SIMPLEX
+        #cv2.putText(background,'Pulse 44 bpm',(330,40), font, 1,(233,244,255),1,cv2.LINE_AA)
 
         rows, cols, channels = res.shape
         background[0:rows, 0:cols] = res
@@ -159,13 +159,13 @@ if __name__ == '__main__':
     
     background = cv2.imread('../data/background.jpg')
     cv2.imshow('Health monitor', background)
-    cv2.waitKey(0)
+    #cv2.waitKey(0)
 
     # Create a blank 640x480 black image
-    image = np.zeros((480, 640, 3), np.uint8)
+    #image = np.zeros((480, 640, 3), np.uint8)
     # Fill image with 
-    image[:] = (50, 50, 50)
-    background = image
+    #image[:] = (50, 50, 50)
+    #background = image
     timer = threading.Timer(1.0, alarm_info)
 
     g_last_frame = ""
