@@ -175,7 +175,7 @@ def detectPersonStatusWithin(time_in_seconds):
         # TODO: check resolution
         
         # scale: which controls by how much the image is resized at each layer
-        found,w = hog.detectMultiScale(health_f, winStride=(4,4), padding=(32,32), scale=1.05)
+        found,w = hog.detectMultiScale(health_f, winStride=(4,4), padding=(32,32), scale=1.2)
         
         if not w is None:
             # person detected
