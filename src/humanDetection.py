@@ -165,7 +165,7 @@ def detectPersonStatusWithin(time_in_seconds):
     
     # open the video capture
     cap = cv2.VideoCapture(0)
-    
+    counter = 0
     while True:
         # This loop will last only for time_in_seconds seconds
         
@@ -184,14 +184,18 @@ def detectPersonStatusWithin(time_in_seconds):
             background[0:rows, 0:cols] = frame
             cv2.imshow('Health monitor', background)
 
-            if isMoving(found, last_frame):
-                moving = True
-                print "target is moving! detection done!"
-                break
+            # if isMoving(found, last_frame):
+            #     moving = True
+            #     print "target is moving! detection done!"
+            #     break
             
             last_frame = found
         else:
             print "no person detected!!"
+        counter += 1
+        if counter == 50:
+            counter = 0
+            # update status on the frame
             
         # check timeout
         if time.time() - start_time >= time_in_seconds:
@@ -251,7 +255,7 @@ if __name__ == '__main__':
             try:
                 # We detected the correct person, keep tracking if he is moving
                 while True:
-                    isMoving, Pulse = detectPersonStatusWithin(30)
+                    isMoving, Pulse = detectPersonStatusWithin(300)
                     #status_update(g_timer_thread, isMoving, Pulse, 30)
                     print "sleeping!!"
                     time.sleep(5)
