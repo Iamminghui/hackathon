@@ -127,7 +127,6 @@ def detectPersonStatusWithin_haar(time_in_seconds):
         
         if len(faces):
             # person detected
-            print "people detected!! faces: %s" % (faces,)
             draw_detections(frame,faces)
             rows, cols, channels = frame.shape
             background[0:rows, 0:cols] = frame
@@ -176,12 +175,11 @@ def detectPersonStatusWithin(time_in_seconds):
         # TODO: check resolution
         
         # scale: which controls by how much the image is resized at each layer
-        found,w = hog.detectMultiScale(health_f, winStride=(8,8), padding=(32,32), scale=1.2)
+        found,w = hog.detectMultiScale(health_f, winStride=(4,4), padding=(32,32), scale=1.05)
         
         if not w is None:
             # person detected
-            print "people detected!! found: %s" % (found,)
-            draw_detections(health_f,found)
+            draw_detections(frame,found)
             rows, cols, channels = frame.shape
             background[0:rows, 0:cols] = frame
             cv2.imshow('Health monitor', background)
@@ -243,13 +241,13 @@ if __name__ == '__main__':
     while True:
         if not detected:
             # Now someone is entering the apartment
-            #detected = detectWantedPerson(person)
-            detected = True
+            detected = detectWantedPerson(person)
 
         if detected:
             # start a thread that keep updating the target status
             # g_timer_thread, g_timer_stop_event = status_on()
 
+            _, _ = detectPersonStatusWithin(2)
             try:
                 # We detected the correct person, keep tracking if he is moving
                 while True:
