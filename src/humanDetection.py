@@ -78,8 +78,13 @@ def detectWantedPerson(name):
                 ret = True
             break
         
-        cv2.imshow('Gray', gray)
+        #cv2.imshow('Gray', gray)
+        #font = cv2.FONT_HERSHEY_SIMPLEX
+        #cv2.putText(background,'Pulse 44 bpm',(330,40), font, 1,(233,244,255),1,cv2.LINE_AA)
 
+        rows, cols, channels = res.shape
+        background[0:rows, 0:cols] = res
+        cv2.imshow('Health monitor', background)
         k = cv2.waitKey(60) & 0xff
         if k == 27:
             ret = False
@@ -90,12 +95,61 @@ def detectWantedPerson(name):
             ret = False
             break
         
-    cv2.destroyAllWindows()
+    #cv2.destroyWindow('Gray')
     capture.release()
 
     print "ret: " + str(ret)
     
     return ret
+
+def detectPersonStatusWithin_haar(time_in_seconds):
+
+    start_time = time.time()
+    last_frame = ""
+    moving = "False"
+    pulse = 60
+    
+    # open the video capture
+    cap = cv2.VideoCapture(0)
+
+    # load the HOG Descriptor
+    hog = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+    while True:
+        # This loop will last only for time_in_seconds seconds
+        
+        _,frame=cap.read()
+        frame = cv2.resize(frame, (320, 200), 0, 0, cv2.INTER_CUBIC)
+        health_f = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # TODO: check resolution
+        
+        faces = face_cascade.detectMultiScale(gray, 1.1, 3)
+        
+        if len(faces):
+            # person detected
+            print "people detected!! faces: %s" % (faces,)
+            draw_detections(frame,faces)
+            rows, cols, channels = frame.shape
+            background[0:rows, 0:cols] = frame
+            cv2.imshow('Health monitor', background)
+
+            if isMoving(faces, last_frame):
+                moving = True
+                print "target is moving! detection done!"
+                break
+            
+            last_frame = faces
+        else:
+            print "no person detected!!"
+            
+        # check timeout
+        if time.time() - start_time >= time_in_seconds:
+            print "time out. target not moved within %s seconds" % (time_in_seconds)  
+            break
+
+    cap.release()
+
+    return moving, pulse
 
 def detectPersonStatusWithin(time_in_seconds):
 
@@ -117,17 +171,20 @@ def detectPersonStatusWithin(time_in_seconds):
         # This loop will last only for time_in_seconds seconds
         
         _,frame=cap.read()
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        frame = cv2.resize(frame, (320, 200), 0, 0, cv2.INTER_CUBIC)
+        health_f = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         # TODO: check resolution
-        frame = cv2.resize(frame, (400, 225), 0, 0, cv2.INTER_CUBIC)
         
         # scale: which controls by how much the image is resized at each layer
-        found,w = hog.detectMultiScale(frame, winStride=(4,4), padding=(32,32), scale=1.1)
+        found,w = hog.detectMultiScale(health_f, winStride=(8,8), padding=(32,32), scale=1.2)
         
         if not w is None:
             # person detected
-            draw_detections(frame,found)
-            cv2.imshow('feed',frame)
+            print "people detected!! found: %s" % (found,)
+            draw_detections(health_f,found)
+            rows, cols, channels = frame.shape
+            background[0:rows, 0:cols] = frame
+            cv2.imshow('Health monitor', background)
 
             if isMoving(found, last_frame):
                 moving = True
@@ -143,7 +200,6 @@ def detectPersonStatusWithin(time_in_seconds):
             print "time out. target not moved within %s seconds" % (time_in_seconds)  
             break
 
-    cv2.destroyWindow("feed")
     cap.release()
 
     return moving, pulse
@@ -177,6 +233,9 @@ if __name__ == '__main__':
     detected = False
     person = "Lars"
     
+    background = cv2.imread('../data/background.jpg')
+    cv2.imshow('Health monitor', background)
+
     g_timer_status = False
     g_timer_thread = ""
     g_timer_stop_event = ""
@@ -184,7 +243,8 @@ if __name__ == '__main__':
     while True:
         if not detected:
             # Now someone is entering the apartment
-            detected = detectWantedPerson(person)
+            #detected = detectWantedPerson(person)
+            detected = True
 
         if detected:
             # start a thread that keep updating the target status
