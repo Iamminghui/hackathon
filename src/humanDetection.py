@@ -5,6 +5,7 @@ import time
 from threading import Thread
 from threading import Event
 import math
+from random import randint
 
 class MyThread(Thread):
 
@@ -39,6 +40,18 @@ def status_off(stopEvent):
 def status_update(thread, isMoving, pulse, not_moving_period):
     thread.update(isMoving, pulse, not_moving_period)
         
+
+def printText():
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    systol = str(110 + randint(0, 5))
+    mean = str(80 + randint(0, 5))
+    diastolic = str(70 + randint(0, 5))
+    hr = str(130 + randint(0, 50))
+    cv2.putText(background,systol,(500,68), font, 1,(233,244,255),1,cv2.LINE_AA)
+    cv2.putText(background,mean,(500,96), font, 1,(233,244,255),1,cv2.LINE_AA)
+    cv2.putText(background,diastolic,(500,124), font, 1,(233,244,255),1,cv2.LINE_AA)
+    cv2.putText(background,hr,(500,150), font, 1,(233,244,255),1,cv2.LINE_AA)
+
 def detectWantedPerson(name):
 
     # logic should be:
@@ -61,6 +74,8 @@ def detectWantedPerson(name):
     counter = 50
     ret = False
     
+    cv2.rectangle(background, (500, 10), (620, 200) , (130,130, 130), -1)
+    printText()
     while success:
         print "counter: " + str(counter)
         
@@ -74,13 +89,18 @@ def detectWantedPerson(name):
             print "face detected!"
             print "faces: %s" %(faces,)
             for (x, y, w, h) in faces:
-                cv2.rectangle(gray, (x, y), (x+w, y+h),(255,255,255),2)
+                cv2.rectangle(res, (x, y), (x+w, y+h),(255,255,255),2)
                 ret = True
-            break
+            #break
         
         #cv2.imshow('Gray', gray)
-        #font = cv2.FONT_HERSHEY_SIMPLEX
-        #cv2.putText(background,'Pulse 44 bpm',(330,40), font, 1,(233,244,255),1,cv2.LINE_AA)
+    #    cv2.rectangle(background, (500, 10), (620, 200) , (130,130, 130), -1)
+    #    printText()
+    #    font = cv2.FONT_HERSHEY_SIMPLEX
+    #    cv2.putText(background,'112',(500,68), font, 1,(233,244,255),1,cv2.LINE_AA)
+    #    cv2.putText(background,'84',(500,96), font, 1,(233,244,255),1,cv2.LINE_AA)
+    #    cv2.putText(background,'70',(500,124), font, 1,(233,244,255),1,cv2.LINE_AA)
+    #    cv2.putText(background,'162',(500,150), font, 1,(233,244,255),1,cv2.LINE_AA)
 
         rows, cols, channels = res.shape
         background[0:rows, 0:cols] = res
@@ -243,6 +263,7 @@ if __name__ == '__main__':
             # Now someone is entering the apartment
             detected = detectWantedPerson(person)
 
+        detected = 0
         if detected:
             # start a thread that keep updating the target status
             # g_timer_thread, g_timer_stop_event = status_on()
