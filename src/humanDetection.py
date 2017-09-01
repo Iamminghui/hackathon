@@ -74,8 +74,8 @@ def detectWantedPerson(name):
     counter = 50
     ret = False
     
-    cv2.rectangle(background, (500, 10), (620, 200) , (130,130, 130), -1)
-    printText()
+#    cv2.rectangle(background, (500, 10), (620, 200) , (130,130, 130), -1)
+#    printText()
     while success:
         print "counter: " + str(counter)
         
@@ -113,7 +113,9 @@ def detectWantedPerson(name):
         counter -= 1
         if (counter == 0):
             ret = False
-            break
+            cv2.rectangle(background, (500, 10), (620, 200) , (127,127, 127), -1)
+            printText()
+            counter = 50 + randint(0,10)
         
     #cv2.destroyWindow('Gray')
     capture.release()
